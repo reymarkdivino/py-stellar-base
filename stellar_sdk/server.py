@@ -37,9 +37,11 @@ from .response.operation_response import (
 from .response.orderbook_response import OrderbookResponse
 from .response.payment_path_response import PaymentPathResponse
 from .response.root_response import RootResponse
+from .response.submit_response import TransactionSuccessResponse
 from .response.trade_response import TradeResponse
 from .response.trades_aggregation_response import TradesAggregationResponse
 from .response.transaction_response import TransactionResponse
+from .response.wrapped_response import WrappedResponse
 from .client.base_async_client import BaseAsyncClient
 from .client.base_sync_client import BaseSyncClient
 from .client.requests_client import RequestsClient
@@ -89,7 +91,7 @@ class Server:
 
     def submit_transaction(
         self, transaction_envelope: Union[TransactionEnvelope, str]
-    ) -> Union[Dict[str, Any], Coroutine[Any, Any, Dict[str, Any]]]:
+    ) -> Union[WrappedResponse[TransactionSuccessResponse], Coroutine[Any, Any, WrappedResponse[TransactionSuccessResponse]]]:
         """Submits a transaction to the network.
 
         :param transaction_envelope: :class:`stellar_sdk.transaction_envelope.TransactionEnvelope` object
@@ -108,17 +110,20 @@ class Server:
 
     def __submit_transaction_sync(
         self, url: str, data: Dict[str, str]
-    ) -> Dict[str, Any]:
+    ) -> WrappedResponse[TransactionSuccessResponse]:
         resp = self._client.post(url=url, data=data)
         raise_request_exception(resp)
-        return resp.json()
+        return WrappedResponse(resp.json(), self._parse_success_transaction)
 
     async def __submit_transaction_async(
         self, url: str, data: Dict[str, str]
-    ) -> Dict[str, Any]:
+    ) -> WrappedResponse[TransactionSuccessResponse]:
         resp = await self._client.post(url=url, data=data)
         raise_request_exception(resp)
-        return resp.json()
+        return WrappedResponse(resp.json(), self._parse_success_transaction)
+
+    def _parse_success_transaction(self, raw_data: dict) -> TransactionSuccessResponse:
+        return TransactionSuccessResponse.parse_obj(raw_data)
 
     def root(self) -> RootCallBuilder[RootResponse]:
         """
