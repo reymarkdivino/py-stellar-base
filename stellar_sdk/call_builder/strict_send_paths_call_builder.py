@@ -1,13 +1,16 @@
-from typing import Union, List
+from typing import Union, List, TypeVar
 
 from ..utils import convert_assets_to_horizon_param
 from ..asset import Asset
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
+from ..response.payment_path_response import PaymentPathResponse
+
+T = TypeVar("T")
 
 
-class StrictSendPathsCallBuilder(BaseCallBuilder):
+class StrictSendPathsCallBuilder(BaseCallBuilder[T]):
     """Creates a new :class:`StrictSendPathsCallBuilder` pointed to server defined by horizon_url.
     Do not create this object directly, use :func:`stellar_sdk.server.Server.strict_send_paths`.
 
@@ -61,3 +64,15 @@ class StrictSendPathsCallBuilder(BaseCallBuilder):
         else:
             params["destination_assets"] = convert_assets_to_horizon_param(destination)
         self._add_query_params(params)
+
+    def _parse_response(
+        self, raw_data: dict
+    ) -> Union[List[PaymentPathResponse], PaymentPathResponse]:
+        if self._check_pageable(raw_data):
+            parsed = [
+                PaymentPathResponse.parse_obj(record)
+                for record in raw_data["_embedded"]["records"]
+            ]
+        else:
+            parsed = PaymentPathResponse.parse_obj(raw_data)
+        return parsed

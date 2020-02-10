@@ -1,11 +1,24 @@
-from typing import Union
+from typing import Union, TypeVar, List, AsyncGenerator, Generator
 
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
+from ..response.operation_response import *
+from ..response.operation_response import PAYMENT_RESPONSE_TYPE_UNION
+from ..response.wrapped_response import WrappedResponse
+from ..xdr.StellarXDR_const import (
+    CREATE_ACCOUNT,
+    PAYMENT,
+    PATH_PAYMENT_STRICT_RECEIVE,
+    ACCOUNT_MERGE,
+    PATH_PAYMENT_STRICT_SEND,
+)
 
 
-class PaymentsCallBuilder(BaseCallBuilder):
+T = TypeVar("T")
+
+
+class PaymentsCallBuilder(BaseCallBuilder[T]):
     """ Creates a new :class:`PaymentsCallBuilder` pointed to server defined by horizon_url.
     Do not create this object directly, use :func:`stellar_sdk.server.Server.payments`.
 
@@ -21,7 +34,7 @@ class PaymentsCallBuilder(BaseCallBuilder):
         super().__init__(horizon_url, client)
         self.endpoint: str = "payments"
 
-    def for_account(self, account_id: str) -> "PaymentsCallBuilder":
+    def for_account(self, account_id: str) -> "PaymentsCallBuilder[T]":
         """This endpoint responds with a collection of Payment operations where the given account
         was either the sender or receiver.
 
@@ -33,7 +46,7 @@ class PaymentsCallBuilder(BaseCallBuilder):
         self.endpoint = "accounts/{account_id}/payments".format(account_id=account_id)
         return self
 
-    def for_ledger(self, sequence: Union[int, str]) -> "PaymentsCallBuilder":
+    def for_ledger(self, sequence: Union[int, str]) -> "PaymentsCallBuilder[T]":
         """This endpoint represents all payment operations that are part of a valid transactions in a given ledger.
 
         See `Payments for Ledger <https://www.stellar.org/developers/horizon/reference/endpoints/payments-for-ledger.html>`_
@@ -44,7 +57,7 @@ class PaymentsCallBuilder(BaseCallBuilder):
         self.endpoint: str = "ledgers/{sequence}/payments".format(sequence=sequence)
         return self
 
-    def for_transaction(self, transaction_hash: str) -> "PaymentsCallBuilder":
+    def for_transaction(self, transaction_hash: str) -> "PaymentsCallBuilder[T]":
         """This endpoint represents all payment operations that are part of a given transaction.
 
         See `Payments for Transaction <https://www.stellar.org/developers/horizon/reference/endpoints/payments-for-transaction.html>`_
@@ -57,7 +70,7 @@ class PaymentsCallBuilder(BaseCallBuilder):
         )
         return self
 
-    def include_failed(self, include_failed: bool) -> "PaymentsCallBuilder":
+    def include_failed(self, include_failed: bool) -> "PaymentsCallBuilder[T]":
         """Adds a parameter defining whether to include failed transactions. By default only
         payments of successful transactions are returned.
 
@@ -66,3 +79,41 @@ class PaymentsCallBuilder(BaseCallBuilder):
         """
         self._add_query_param("include_failed", include_failed)
         return self
+
+    def _parse_obj(self, operation_json):
+        operation_type = operation_json["type_i"]
+        operation_response_types = {
+            CREATE_ACCOUNT: CreateAccountResponse,
+            PAYMENT: PaymentResponse,
+            PATH_PAYMENT_STRICT_RECEIVE: PathPaymentStrictReceiveResponse,
+            ACCOUNT_MERGE: AccountMergeResponse,
+            PATH_PAYMENT_STRICT_SEND: PathPaymentStrictSendResponse,
+        }
+        if operation_type not in operation_response_types:
+            raise NotImplementedError(
+                "The type of operation is %d, which is not currently supported in the version. "
+                "Please try to upgrade the SDK or raise an issue." % operation_type
+            )
+        return operation_response_types[operation_type].parse_obj(operation_json)
+
+    def _parsed_response(
+        self, raw_data: dict
+    ) -> Union[
+        WrappedResponse[List[PAYMENT_RESPONSE_TYPE_UNION]],
+        WrappedResponse[PAYMENT_RESPONSE_TYPE_UNION],
+    ]:
+        if self._check_pageable(raw_data):
+            parsed = [
+                self._parse_obj(record) for record in raw_data["_embedded"]["records"]
+            ]
+        else:
+            parsed = self._parse_obj(raw_data)
+        return parsed
+
+    def stream(
+        self
+    ) -> Union[
+        AsyncGenerator[WrappedResponse[PAYMENT_RESPONSE_TYPE_UNION], None],
+        Generator[WrappedResponse[PAYMENT_RESPONSE_TYPE_UNION], None, None],
+    ]:
+        return self._stream()

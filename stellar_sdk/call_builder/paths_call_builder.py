@@ -1,13 +1,17 @@
 import warnings
-from typing import Union
+from typing import Union, TypeVar, List
 
 from ..asset import Asset
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
+from ..response.payment_path_response import PaymentPathResponse
 
 
-class PathsCallBuilder(BaseCallBuilder):
+T = TypeVar("T")
+
+
+class PathsCallBuilder(BaseCallBuilder[T]):
     """ Creates a new :class:`PathsCallBuilder` pointed to server defined by horizon_url.
     Do not create this object directly, use :func:`stellar_sdk.server.Server.paths`.
 
@@ -54,3 +58,15 @@ class PathsCallBuilder(BaseCallBuilder):
             "destination_asset_issuer": destination_asset.issuer,
         }
         self._add_query_params(params)
+
+    def _parse_response(
+        self, raw_data: dict
+    ) -> Union[List[PaymentPathResponse], PaymentPathResponse]:
+        if self._check_pageable(raw_data):
+            parsed = [
+                PaymentPathResponse.parse_obj(record)
+                for record in raw_data["_embedded"]["records"]
+            ]
+        else:
+            parsed = PaymentPathResponse.parse_obj(raw_data)
+        return parsed

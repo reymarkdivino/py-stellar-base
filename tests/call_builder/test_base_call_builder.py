@@ -48,7 +48,7 @@ class TestBaseCallBuilder:
     async def test_get_stream_data_async(self):
         url = "https://horizon.stellar.org/ledgers"
         client = AiohttpClient()
-        resp = BaseCallBuilder(url, client).cursor("now").stream()
+        resp = BaseCallBuilder(url, client).cursor("now")._stream()
         messages = []
         async for msg in resp:
             assert isinstance(msg, dict)
@@ -61,7 +61,7 @@ class TestBaseCallBuilder:
     def test_stream_data_sync(self):
         url = "https://horizon.stellar.org/ledgers"
         client = RequestsClient()
-        resp = BaseCallBuilder(url, client).cursor("now").stream()
+        resp = BaseCallBuilder(url, client).cursor("now")._stream()
         messages = []
         for msg in resp:
             assert isinstance(msg, dict)

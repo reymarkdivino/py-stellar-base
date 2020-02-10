@@ -1,11 +1,15 @@
-from typing import Union
+from typing import Union, TypeVar, List, AsyncGenerator, Generator
 
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
+from ..response.effect_response import EffectResponse
+from ..response.wrapped_response import WrappedResponse
+
+T = TypeVar("T")
 
 
-class EffectsCallBuilder(BaseCallBuilder):
+class EffectsCallBuilder(BaseCallBuilder[T]):
     """ Creates a new :class:`EffectsCallBuilder` pointed to server defined by horizon_url.
     Do not create this object directly, use :func:`stellar_sdk.server.Server.effects`.
 
@@ -21,7 +25,7 @@ class EffectsCallBuilder(BaseCallBuilder):
         super().__init__(horizon_url, client)
         self.endpoint: str = "effects"
 
-    def for_account(self, account_id: str) -> "EffectsCallBuilder":
+    def for_account(self, account_id: str) -> "EffectsCallBuilder[T]":
         """This endpoint represents all effects that changed a given account. It will return relevant
         effects from the creation of the account to the current ledger.
 
@@ -33,7 +37,7 @@ class EffectsCallBuilder(BaseCallBuilder):
         self.endpoint = "accounts/{account_id}/effects".format(account_id=account_id)
         return self
 
-    def for_ledger(self, sequence: Union[int, str]) -> "EffectsCallBuilder":
+    def for_ledger(self, sequence: Union[int, str]) -> "EffectsCallBuilder[T]":
         """Effects are the specific ways that the ledger was changed by any operation.
         This endpoint represents all effects that occurred in the given ledger.
 
@@ -45,7 +49,7 @@ class EffectsCallBuilder(BaseCallBuilder):
         self.endpoint: str = "ledgers/{sequence}/effects".format(sequence=sequence)
         return self
 
-    def for_transaction(self, transaction_hash: str) -> "EffectsCallBuilder":
+    def for_transaction(self, transaction_hash: str) -> "EffectsCallBuilder[T]":
         """This endpoint represents all effects that occurred as a result of a given transaction.
 
         See `Effects for Transaction <https://www.stellar.org/developers/horizon/reference/endpoints/effects-for-transaction.html>`_
@@ -58,7 +62,7 @@ class EffectsCallBuilder(BaseCallBuilder):
         )
         return self
 
-    def for_operation(self, operation_id: Union[int, str]) -> "EffectsCallBuilder":
+    def for_operation(self, operation_id: Union[int, str]) -> "EffectsCallBuilder[T]":
         """This endpoint represents all effects that occurred as a result of a given operation.
 
         See `Effects for Operation <https://www.stellar.org/developers/horizon/reference/endpoints/effects-for-operation.html>`_
@@ -70,3 +74,23 @@ class EffectsCallBuilder(BaseCallBuilder):
             operation_id=operation_id
         )
         return self
+
+    def _parse_response(
+        self, raw_data: dict
+    ) -> Union[List[EffectResponse], EffectResponse]:
+        if self._check_pageable(raw_data):
+            parsed = [
+                EffectResponse.parse_obj(record)
+                for record in raw_data["_embedded"]["records"]
+            ]
+        else:
+            parsed = EffectResponse.parse_obj(raw_data)
+        return parsed
+
+    def stream(
+        self
+    ) -> Union[
+        AsyncGenerator[WrappedResponse[EffectResponse], None],
+        Generator[WrappedResponse[EffectResponse], None, None],
+    ]:
+        return self._stream()
