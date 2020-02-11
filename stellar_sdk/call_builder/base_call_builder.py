@@ -62,24 +62,24 @@ class BaseCallBuilder(Generic[T]):
                 please submit an issue
         """
         url = urljoin(self.horizon_url, self.endpoint)
-        return self.__call(url, self.params)
+        return self._call(url, self.params)
 
-    def __call(
+    def _call(
         self, url: str, params: dict = None
     ) -> Union[WrappedResponse[T], Coroutine[Any, Any, WrappedResponse[T]]]:
         if self.__async:
-            return self.__call_async(url, params)
+            return self._call_async(url, params)
         else:
-            return self.__call_sync(url, params)
+            return self._call_sync(url, params)
 
-    def __call_sync(self, url: str, params: dict = None) -> WrappedResponse[T]:
+    def _call_sync(self, url: str, params: dict = None) -> WrappedResponse[T]:
         raw_resp = self.client.get(url, params)
         raise_request_exception(raw_resp)
         resp = raw_resp.json()
         self._set_page_link(resp)
         return WrappedResponse(resp, self._parse_response)
 
-    async def __call_async(self, url: str, params: dict = None) -> WrappedResponse[T]:
+    async def _call_async(self, url: str, params: dict = None) -> WrappedResponse[T]:
         raw_resp = await self.client.get(url, params)
         raise_request_exception(raw_resp)
         resp = raw_resp.json()
@@ -157,12 +157,12 @@ class BaseCallBuilder(Generic[T]):
     def next(self):
         if self.next_href is None:
             raise NotPageableError("The next page does not exist.")
-        return self.__call(self.next_href, None)
+        return self._call(self.next_href, None)
 
     def prev(self):
         if self.next_href is None:
             raise NotPageableError("The prev page does not exist.")
-        return self.__call(self.prev_href, None)
+        return self._call(self.prev_href, None)
 
     def _add_query_param(self, key: str, value: Union[str, float, int, bool, None]):
         if value is None:
