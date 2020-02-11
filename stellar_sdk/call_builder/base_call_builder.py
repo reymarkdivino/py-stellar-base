@@ -104,17 +104,17 @@ class BaseCallBuilder(Generic[T]):
             it is called asynchronously, it will return ``AsyncGenerator``.
         """
         if self.__async:
-            return self.__stream_async()
+            return self._stream_async()
         else:
-            return self.__stream_sync()
+            return self._stream_sync()
 
-    async def __stream_async(self) -> AsyncGenerator[WrappedResponse, None]:
+    async def _stream_async(self) -> AsyncGenerator[WrappedResponse, None]:
         url = urljoin(self.horizon_url, self.endpoint)
         stream = self.client.stream(url, self.params)
         while True:
             yield self._parse_response(await stream.__anext__())
 
-    def __stream_sync(self) -> Generator[WrappedResponse, None, None]:
+    def _stream_sync(self) -> Generator[WrappedResponse, None, None]:
         url = urljoin(self.horizon_url, self.endpoint)
         stream = self.client.stream(url, self.params)
         while True:

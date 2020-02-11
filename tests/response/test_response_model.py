@@ -19,13 +19,13 @@ from stellar_sdk.response.submit_response import TransactionSuccessResponse
 
 def load_file(filename: str) -> dict:
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    filepath = os.path.join(dir_path, 'resources', filename)
-    with open(filepath, 'r') as f:
+    filepath = os.path.join(dir_path, "resources", filename)
+    with open(filepath, "r") as f:
         return json.loads(f.read())
 
 
 def parse_time(time: str):
-    dt = datetime.datetime.strptime(time, '%Y-%m-%dT%H:%M:%SZ')
+    dt = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
     return dt.replace(tzinfo=datetime.timezone.utc)
 
 
@@ -48,26 +48,26 @@ class TestResponseModel:
     def test_fee_stats(self):
         raw = load_file("fee_stats.json")
         parsed = FeeStatsResponse.parse_obj(raw)
-        raw['last_ledger'] = int(parsed.last_ledger)
-        raw['last_ledger_base_fee'] = int(parsed.last_ledger_base_fee)
-        raw['ledger_capacity_usage'] = float(parsed.ledger_capacity_usage)
-        for k, v in raw['fee_charged'].items():
-            raw['fee_charged'][k] = int(v)
-        for k, v in raw['max_fee'].items():
-            raw['max_fee'][k] = int(v)
+        raw["last_ledger"] = int(parsed.last_ledger)
+        raw["last_ledger_base_fee"] = int(parsed.last_ledger_base_fee)
+        raw["ledger_capacity_usage"] = float(parsed.ledger_capacity_usage)
+        for k, v in raw["fee_charged"].items():
+            raw["fee_charged"][k] = int(v)
+        for k, v in raw["max_fee"].items():
+            raw["max_fee"][k] = int(v)
         assert raw == parsed.dict(skip_defaults=True, by_alias=True)
 
     def test_ledger(self):
         raw = load_file("ledger.json")
         parsed = LedgerResponse.parse_obj(raw)
-        raw['closed_at'] = parse_time(raw['closed_at'])
+        raw["closed_at"] = parse_time(raw["closed_at"])
         assert raw == parsed.dict(skip_defaults=True, by_alias=True)
 
     def test_offer(self):
         raw = load_file("offer.json")
         parsed = OfferResponse.parse_obj(raw)
-        raw['id'] = int(raw['id'])
-        raw['last_modified_time'] = parse_time(raw['last_modified_time'])
+        raw["id"] = int(raw["id"])
+        raw["last_modified_time"] = parse_time(raw["last_modified_time"])
         assert raw == parsed.dict(skip_defaults=True, by_alias=True)
 
     def test_orderbook(self):
@@ -88,7 +88,7 @@ class TestResponseModel:
     def test_trade(self):
         raw = load_file("trade.json")
         parsed = TradeResponse.parse_obj(raw)
-        raw['ledger_close_time'] = parse_time(raw['ledger_close_time'])
+        raw["ledger_close_time"] = parse_time(raw["ledger_close_time"])
         assert raw == parsed.dict(skip_defaults=True, by_alias=True)
 
     def test_trades_aggregation(self):
@@ -99,10 +99,10 @@ class TestResponseModel:
     def test_transaction(self):
         raw = load_file("transaction.json")
         parsed = TransactionResponse.parse_obj(raw)
-        raw['created_at'] = parse_time(raw['created_at'])
-        raw['valid_before'] = parse_time(raw['valid_before'])
-        raw['valid_after'] = parse_time(raw['valid_after'])
-        raw['source_account_sequence'] = int(raw['source_account_sequence'])
+        raw["created_at"] = parse_time(raw["created_at"])
+        raw["valid_before"] = parse_time(raw["valid_before"])
+        raw["valid_after"] = parse_time(raw["valid_after"])
+        raw["source_account_sequence"] = int(raw["source_account_sequence"])
         assert raw == parsed.dict(skip_defaults=True, by_alias=True)
 
     def test_submit_transaction_success(self):

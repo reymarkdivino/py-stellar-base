@@ -19,6 +19,7 @@ class Links(BaseModel):
 class TransactionResponse(BaseModel):
     """Represents a single transaction.
     """
+
     id: str
     paging_token: str
     successful: bool
