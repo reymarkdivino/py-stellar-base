@@ -3,17 +3,11 @@ from typing import Union, TypeVar, List, AsyncGenerator, Generator
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
-from ..response.operation_response import *
-from ..response.operation_response import PAYMENT_RESPONSE_TYPE_UNION
-from ..response.wrapped_response import WrappedResponse
-from ..xdr.StellarXDR_const import (
-    CREATE_ACCOUNT,
-    PAYMENT,
-    PATH_PAYMENT_STRICT_RECEIVE,
-    ACCOUNT_MERGE,
-    PATH_PAYMENT_STRICT_SEND,
+from ..response.operation_response import (
+    PAYMENT_RESPONSE_TYPE_UNION,
+    OPERATION_TYPE_I_RESPONSE,
 )
-
+from ..response.wrapped_response import WrappedResponse
 
 T = TypeVar("T")
 
@@ -80,28 +74,18 @@ class PaymentsCallBuilder(BaseCallBuilder[T]):
         self._add_query_param("include_failed", include_failed)
         return self
 
-    def _parse_obj(self, operation_json):
+    def _parse_obj(self, operation_json) -> PAYMENT_RESPONSE_TYPE_UNION:
         operation_type = operation_json["type_i"]
-        operation_response_types = {
-            CREATE_ACCOUNT: CreateAccountResponse,
-            PAYMENT: PaymentResponse,
-            PATH_PAYMENT_STRICT_RECEIVE: PathPaymentStrictReceiveResponse,
-            ACCOUNT_MERGE: AccountMergeResponse,
-            PATH_PAYMENT_STRICT_SEND: PathPaymentStrictSendResponse,
-        }
-        if operation_type not in operation_response_types:
+        if operation_type not in OPERATION_TYPE_I_RESPONSE:
             raise NotImplementedError(
                 "The type of operation is %d, which is not currently supported in the version. "
                 "Please try to upgrade the SDK or raise an issue." % operation_type
             )
-        return operation_response_types[operation_type].parse_obj(operation_json)
+        return OPERATION_TYPE_I_RESPONSE[operation_type].parse_obj(operation_json)
 
     def _parsed_response(
         self, raw_data: dict
-    ) -> Union[
-        WrappedResponse[List[PAYMENT_RESPONSE_TYPE_UNION]],
-        WrappedResponse[PAYMENT_RESPONSE_TYPE_UNION],
-    ]:
+    ) -> Union[List[PAYMENT_RESPONSE_TYPE_UNION], PAYMENT_RESPONSE_TYPE_UNION]:
         if self._check_pageable(raw_data):
             parsed = [
                 self._parse_obj(record) for record in raw_data["_embedded"]["records"]

@@ -10,6 +10,7 @@ class Links(BaseModel):
 class TransactionSuccessResponse(BaseModel):
     """Represents the result of a successful transaction submission.
     """
+
     hash: str
     ledger: int
     envelope_xdr: str

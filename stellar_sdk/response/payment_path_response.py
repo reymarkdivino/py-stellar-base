@@ -8,6 +8,7 @@ from .common import Asset
 class PaymentPathResponse(BaseModel):
     """Represents a single payment path.
     """
+
     source_asset_type: str
     source_asset_code: Optional[str]
     source_asset_issuer: Optional[str]

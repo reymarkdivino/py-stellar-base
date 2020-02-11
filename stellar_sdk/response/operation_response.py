@@ -5,6 +5,23 @@ from pydantic import BaseModel, Field
 
 from .common import Asset, Link, Price
 from .transaction_response import TransactionResponse
+from ..xdr.StellarXDR_const import (
+    CREATE_ACCOUNT,
+    PAYMENT,
+    PATH_PAYMENT_STRICT_RECEIVE,
+    MANAGE_SELL_OFFER,
+    CREATE_PASSIVE_SELL_OFFER,
+    SET_OPTIONS,
+    CHANGE_TRUST,
+    ALLOW_TRUST,
+    ACCOUNT_MERGE,
+    INFLATION,
+    MANAGE_DATA,
+    BUMP_SEQUENCE,
+    MANAGE_BUY_OFFER,
+    PATH_PAYMENT_STRICT_SEND,
+)
+
 __all__ = [
     "CreateAccountResponse",
     "PaymentResponse",
@@ -19,7 +36,7 @@ __all__ = [
     "ManageDataResponse",
     "BumpSequenceResponse",
     "ManageBuyOfferResponse",
-    "PathPaymentStrictSendResponse"
+    "PathPaymentStrictSendResponse",
 ]
 
 
@@ -47,12 +64,14 @@ class BaseOperationResponse(BaseModel):
 class BumpSequenceResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is BumpSequence.
     """
+
     bump_to: int  # str in go source
 
 
 class CreateAccountResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is CreateAccount.
     """
+
     starting_balance: str
     funder: str
     account: str
@@ -61,11 +80,16 @@ class CreateAccountResponse(BaseOperationResponse):
 class PaymentResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is Payment.
     """
+
     asset_type: str
     asset_code: Optional[str]
     asset_issuer: Optional[str]
-    from_: str = Field(None, alias="from", description="This variable should be called `from`, "
-                                                       "but `from` is a keyword in Python, so we named it` from_`.")
+    from_: str = Field(
+        None,
+        alias="from",
+        description="This variable should be called `from`, "
+        "but `from` is a keyword in Python, so we named it` from_`.",
+    )
     to: str
     amount: str
 
@@ -73,11 +97,16 @@ class PaymentResponse(BaseOperationResponse):
 class PathPaymentStrictReceiveResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is PathPaymentStrictReceive.
     """
+
     asset_type: str
     asset_code: Optional[str]
     asset_issuer: Optional[str]
-    from_: str = Field(None, alias="from", description="This variable should be called `from`, "
-                                                       "but `from` is a keyword in Python, so we named it` from_`.")
+    from_: str = Field(
+        None,
+        alias="from",
+        description="This variable should be called `from`, "
+        "but `from` is a keyword in Python, so we named it` from_`.",
+    )
     to: str
     amount: str
     path: List[Asset]
@@ -91,11 +120,16 @@ class PathPaymentStrictReceiveResponse(BaseOperationResponse):
 class PathPaymentStrictSendResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is PathPaymentStrictSend.
     """
+
     asset_type: str
     asset_code: Optional[str]
     asset_issuer: Optional[str]
-    from_: str = Field(None, alias="from", description="This variable should be called `from`, "
-                                                       "but `from` is a keyword in Python, so we named it` from_`.")
+    from_: str = Field(
+        None,
+        alias="from",
+        description="This variable should be called `from`, "
+        "but `from` is a keyword in Python, so we named it` from_`.",
+    )
     to: str
     amount: str
     path: List[Asset]
@@ -109,6 +143,7 @@ class PathPaymentStrictSendResponse(BaseOperationResponse):
 class ManageDataResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is ManageData.
     """
+
     name: str
     value: str
 
@@ -133,18 +168,21 @@ class CreatePassiveSellOfferResponse(BaseOfferOperationResponse):
 class ManageSellOfferResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is CreatePassiveSellOffer.
     """
+
     offer_id: int
 
 
 class ManageBuyOfferResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is ManageBuyOffer.
     """
+
     offer_id: int
 
 
 class SetOptionsResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is SetOptions.
     """
+
     home_domain: Optional[str]
     inflation_dest: Optional[str]
     master_key_weight: Optional[int]
@@ -162,6 +200,7 @@ class SetOptionsResponse(BaseOperationResponse):
 class ChangeTrustResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is ChangeTrust.
     """
+
     asset_type: str
     asset_code: str
     asset_issuer: str
@@ -173,6 +212,7 @@ class ChangeTrustResponse(BaseOperationResponse):
 class AllowTrustResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is AllowTrust.
     """
+
     asset_type: str
     asset_code: str
     asset_issuer: str
@@ -184,6 +224,7 @@ class AllowTrustResponse(BaseOperationResponse):
 class AccountMergeResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is AccountMerge.
     """
+
     account: str
     into: str
 
@@ -191,6 +232,7 @@ class AccountMergeResponse(BaseOperationResponse):
 class InflationResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is Inflation.
     """
+
 
 OPERATION_RESPONSE_TYPE_UNION = Union[
     CreateAccountResponse,
@@ -216,3 +258,20 @@ PAYMENT_RESPONSE_TYPE_UNION = Union[
     PathPaymentStrictReceiveResponse,
     PathPaymentStrictSendResponse,
 ]
+
+OPERATION_TYPE_I_RESPONSE = {
+    CREATE_ACCOUNT: CreateAccountResponse,
+    PAYMENT: PaymentResponse,
+    PATH_PAYMENT_STRICT_RECEIVE: PathPaymentStrictReceiveResponse,
+    MANAGE_SELL_OFFER: ManageSellOfferResponse,
+    CREATE_PASSIVE_SELL_OFFER: CreatePassiveSellOfferResponse,
+    SET_OPTIONS: SetOptionsResponse,
+    CHANGE_TRUST: ChangeTrustResponse,
+    ALLOW_TRUST: AllowTrustResponse,
+    ACCOUNT_MERGE: AccountMergeResponse,
+    INFLATION: InflationResponse,
+    MANAGE_DATA: ManageDataResponse,
+    BUMP_SEQUENCE: BumpSequenceResponse,
+    MANAGE_BUY_OFFER: ManageBuyOfferResponse,
+    PATH_PAYMENT_STRICT_SEND: PathPaymentStrictSendResponse,
+}

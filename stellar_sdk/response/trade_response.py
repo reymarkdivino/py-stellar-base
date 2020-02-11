@@ -16,6 +16,7 @@ class Links(BaseModel):
 class TradeResponse(BaseModel):
     """Represents a single Trade.
     """
+
     id: str
     paging_token: str
     ledger_close_time: datetime

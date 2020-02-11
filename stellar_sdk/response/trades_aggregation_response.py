@@ -6,6 +6,7 @@ from .common import Price
 class TradesAggregationResponse(BaseModel):
     """Represents trade data aggregation over a period of time.
     """
+
     base_volume: str
     counter_volume: str
     avg: str

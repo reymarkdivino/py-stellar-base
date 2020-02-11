@@ -3,7 +3,10 @@ from typing import Union, TypeVar, List, AsyncGenerator, Generator
 from ..call_builder.base_call_builder import BaseCallBuilder
 from ..client.base_async_client import BaseAsyncClient
 from ..client.base_sync_client import BaseSyncClient
-from ..response.effect_response import EffectResponse
+from ..response.effect_response import (
+    EFFECT_RESPONSE_TYPE_UNION,
+    EFFECT_TYPE_I_RESPONSE,
+)
 from ..response.wrapped_response import WrappedResponse
 
 T = TypeVar("T")
@@ -75,22 +78,30 @@ class EffectsCallBuilder(BaseCallBuilder[T]):
         )
         return self
 
+    def _parse_obj(self, operation_json) -> EFFECT_RESPONSE_TYPE_UNION:
+        operation_type = operation_json["type_i"]
+        if operation_type not in EFFECT_TYPE_I_RESPONSE:
+            raise NotImplementedError(
+                "The type of effect is %d, which is not currently supported in the version. "
+                "Please try to upgrade the SDK or raise an issue." % operation_type
+            )
+        return EFFECT_TYPE_I_RESPONSE[operation_type].parse_obj(operation_json)
+
     def _parse_response(
         self, raw_data: dict
-    ) -> Union[List[EffectResponse], EffectResponse]:
+    ) -> Union[List[EFFECT_RESPONSE_TYPE_UNION], EFFECT_RESPONSE_TYPE_UNION]:
         if self._check_pageable(raw_data):
             parsed = [
-                EffectResponse.parse_obj(record)
-                for record in raw_data["_embedded"]["records"]
+                self._parse_obj(record) for record in raw_data["_embedded"]["records"]
             ]
         else:
-            parsed = EffectResponse.parse_obj(raw_data)
+            parsed = self._parse_obj(raw_data)
         return parsed
 
     def stream(
         self
     ) -> Union[
-        AsyncGenerator[WrappedResponse[EffectResponse], None],
-        Generator[WrappedResponse[EffectResponse], None, None],
+        AsyncGenerator[WrappedResponse[EFFECT_RESPONSE_TYPE_UNION], None],
+        Generator[WrappedResponse[EFFECT_RESPONSE_TYPE_UNION], None, None],
     ]:
         return self._stream()

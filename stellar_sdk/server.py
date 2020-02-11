@@ -91,7 +91,10 @@ class Server:
 
     def submit_transaction(
         self, transaction_envelope: Union[TransactionEnvelope, str]
-    ) -> Union[WrappedResponse[TransactionSuccessResponse], Coroutine[Any, Any, WrappedResponse[TransactionSuccessResponse]]]:
+    ) -> Union[
+        WrappedResponse[TransactionSuccessResponse],
+        Coroutine[Any, Any, WrappedResponse[TransactionSuccessResponse]],
+    ]:
         """Submits a transaction to the network.
 
         :param transaction_envelope: :class:`stellar_sdk.transaction_envelope.TransactionEnvelope` object
