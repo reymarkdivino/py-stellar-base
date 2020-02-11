@@ -358,11 +358,11 @@ class Server:
             :exc:`UnknownRequestError <stellar_sdk.exceptions.UnknownRequestError>`
         """
         if self.__async:
-            return self.__load_account_async(account_id)
-        return self.__load_account_sync(account_id)
+            return self._load_account_async(account_id)
+        return self._load_account_sync(account_id)
 
-    async def __load_account_async(self, account_id: str) -> Account:
-        resp = await self.accounts().account_id(account_id=account_id).call()
+    async def _load_account_async(self, account_id: str) -> Account:
+        resp = (await self.accounts().account_id(account_id=account_id).call()).raw_data
         sequence = int(resp["sequence"])
         thresholds = Thresholds(
             resp["thresholds"]["low_threshold"],
@@ -374,16 +374,16 @@ class Server:
         account.thresholds = thresholds
         return account
 
-    def __load_account_sync(self, account_id: str) -> Account:
-        resp = self.accounts().account_id(account_id=account_id).call()
-        sequence = int(resp.raw_data["sequence"])
+    def _load_account_sync(self, account_id: str) -> Account:
+        resp = self.accounts().account_id(account_id=account_id).call().raw_data
+        sequence = int(resp["sequence"])
         thresholds = Thresholds(
-            resp.raw_data["thresholds"]["low_threshold"],
-            resp.raw_data["thresholds"]["med_threshold"],
-            resp.raw_data["thresholds"]["high_threshold"],
+            resp["thresholds"]["low_threshold"],
+            resp["thresholds"]["med_threshold"],
+            resp["thresholds"]["high_threshold"],
         )
         account = Account(account_id=account_id, sequence=sequence)
-        account.signers = resp.raw_data["signers"]
+        account.signers = resp["signers"]
         account.thresholds = thresholds
         return account
 
@@ -400,20 +400,20 @@ class Server:
             :exc:`UnknownRequestError <stellar_sdk.exceptions.UnknownRequestError>`
         """
         if self.__async:
-            return self.__fetch_base_fee_async()
-        return self.__fetch_base_fee_sync()
+            return self._fetch_base_fee_async()
+        return self._fetch_base_fee_sync()
 
-    def __fetch_base_fee_sync(self) -> int:
+    def _fetch_base_fee_sync(self) -> int:
         latest_ledger = self.ledgers().order(desc=True).limit(1).call()
-        base_fee = self.__handle_base_fee(latest_ledger.raw_data)
+        base_fee = self._handle_base_fee(latest_ledger.raw_data)
         return base_fee
 
-    async def __fetch_base_fee_async(self) -> int:
+    async def _fetch_base_fee_async(self) -> int:
         latest_ledger = await self.ledgers().order(desc=True).limit(1).call()
-        base_fee = self.__handle_base_fee(latest_ledger.raw_data)
+        base_fee = self._handle_base_fee(latest_ledger.raw_data)
         return base_fee
 
-    def __handle_base_fee(self, latest_ledger: dict) -> int:
+    def _handle_base_fee(self, latest_ledger: dict) -> int:
         base_fee = 100
         if (
             latest_ledger["_embedded"]
@@ -431,14 +431,14 @@ class Server:
         Release all acquired resources.
         """
         if self.__async:
-            return self.__close_async()
+            return self._close_async()
         else:
-            return self.__close_sync()
+            return self._close_sync()
 
-    async def __close_async(self) -> None:
+    async def _close_async(self) -> None:
         await self._client.close()
 
-    def __close_sync(self) -> None:
+    def _close_sync(self) -> None:
         self._client.close()
 
     async def __aenter__(self) -> "Server":

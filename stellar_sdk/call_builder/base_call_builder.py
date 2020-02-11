@@ -84,7 +84,7 @@ class BaseCallBuilder(Generic[T]):
         raise_request_exception(raw_resp)
         resp = raw_resp.json()
         self._set_page_link(resp)
-        return self._parse_response(resp)
+        return WrappedResponse(resp, self._parse_response)
 
     def _parse_response(self, raw_data):
         raise NotImplementedError()  # TODO
