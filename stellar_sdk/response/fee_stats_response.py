@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 
 class FeeDistribution(BaseModel):
@@ -22,18 +23,19 @@ class FeeStatsResponse(BaseModel):
     last_ledger: int
     last_ledger_base_fee: int
     ledger_capacity_usage: float
-    min_accepted_fee: int
-    mode_accepted_fee: int
-    p10_accepted_fee: int
-    p20_accepted_fee: int
-    p30_accepted_fee: int
-    p40_accepted_fee: int
-    p50_accepted_fee: int
-    p60_accepted_fee: int
-    p70_accepted_fee: int
-    p80_accepted_fee: int
-    p90_accepted_fee: int
-    p95_accepted_fee: int
-    p99_accepted_fee: int
     fee_charged: FeeDistribution
     max_fee: FeeDistribution
+    # Removed in horizon 1.0
+    min_accepted_fee: Optional[int]
+    mode_accepted_fee: Optional[int]
+    p10_accepted_fee: Optional[int]
+    p20_accepted_fee: Optional[int]
+    p30_accepted_fee: Optional[int]
+    p40_accepted_fee: Optional[int]
+    p50_accepted_fee: Optional[int]
+    p60_accepted_fee: Optional[int]
+    p70_accepted_fee: Optional[int]
+    p80_accepted_fee: Optional[int]
+    p90_accepted_fee: Optional[int]
+    p95_accepted_fee: Optional[int]
+    p99_accepted_fee: Optional[int]

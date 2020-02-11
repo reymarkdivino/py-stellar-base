@@ -26,7 +26,7 @@ from .call_builder.transactions_call_builder import TransactionsCallBuilder
 from .response.account_response import AccountResponse
 from .response.asset_response import AssetResponse
 from .response.data_response import DataResponse
-from .response.effect_response import EffectResponse
+from .response.effect_response import EFFECT_RESPONSE_TYPE_UNION
 from .response.fee_stats_response import FeeStatsResponse
 from .response.ledger_response import LedgerResponse
 from .response.offer_response import OfferResponse
@@ -161,7 +161,7 @@ class Server:
             data_name=data_name,
         )
 
-    def effects(self) -> EffectsCallBuilder[List[EffectResponse]]:
+    def effects(self) -> EffectsCallBuilder[List[EFFECT_RESPONSE_TYPE_UNION]]:
         """
         :return: New :class:`stellar_sdk.call_builder.EffectsCallBuilder` object configured by
             a current Horizon server configuration.

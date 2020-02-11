@@ -1,6 +1,12 @@
 from pydantic import BaseModel
 
-from .common import Price
+
+class Price(BaseModel):
+    """Represents a price.
+    """
+
+    N: int
+    D: int
 
 
 class TradesAggregationResponse(BaseModel):
