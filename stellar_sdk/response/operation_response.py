@@ -165,14 +165,14 @@ class CreatePassiveSellOfferResponse(BaseOfferOperationResponse):
     """
 
 
-class ManageSellOfferResponse(BaseOperationResponse):
+class ManageSellOfferResponse(BaseOfferOperationResponse):
     """The resource representing a single operation whose type is CreatePassiveSellOffer.
     """
 
     offer_id: int
 
 
-class ManageBuyOfferResponse(BaseOperationResponse):
+class ManageBuyOfferResponse(BaseOfferOperationResponse):
     """The resource representing a single operation whose type is ManageBuyOffer.
     """
 

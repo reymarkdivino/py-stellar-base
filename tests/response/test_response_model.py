@@ -1,7 +1,3 @@
-import json
-import os
-import datetime
-
 from stellar_sdk.response.account_response import AccountResponse
 from stellar_sdk.response.data_response import DataResponse
 from stellar_sdk.response.asset_response import AssetResponse
@@ -16,17 +12,7 @@ from stellar_sdk.response.trades_aggregation_response import TradesAggregationRe
 from stellar_sdk.response.transaction_response import TransactionResponse
 from stellar_sdk.response.submit_response import TransactionSuccessResponse
 
-
-def load_file(filename: str) -> dict:
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    filepath = os.path.join(dir_path, "resources", filename)
-    with open(filepath, "r") as f:
-        return json.loads(f.read())
-
-
-def parse_time(time: str):
-    dt = datetime.datetime.strptime(time, "%Y-%m-%dT%H:%M:%SZ")
-    return dt.replace(tzinfo=datetime.timezone.utc)
+from . import load_file, parse_time
 
 
 class TestResponseModel:

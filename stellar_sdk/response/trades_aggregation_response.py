@@ -1,12 +1,12 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Price(BaseModel):
     """Represents a price.
     """
 
-    N: int
-    D: int
+    n: int = Field(None, alias="N")
+    d: int = Field(None, alias="D")
 
 
 class TradesAggregationResponse(BaseModel):
