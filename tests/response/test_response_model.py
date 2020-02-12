@@ -19,17 +19,17 @@ class TestResponseModel:
     def test_account(self):
         raw = load_file("account.json")
         parsed = AccountResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_asset(self):
         raw = load_file("asset.json")
         parsed = AssetResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_data(self):
         raw = load_file("data.json")
         parsed = DataResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_fee_stats(self):
         raw = load_file("fee_stats.json")
@@ -41,46 +41,46 @@ class TestResponseModel:
             raw["fee_charged"][k] = int(v)
         for k, v in raw["max_fee"].items():
             raw["max_fee"][k] = int(v)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_ledger(self):
         raw = load_file("ledger.json")
         parsed = LedgerResponse.parse_obj(raw)
         raw["closed_at"] = parse_time(raw["closed_at"])
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_offer(self):
         raw = load_file("offer.json")
         parsed = OfferResponse.parse_obj(raw)
         raw["id"] = int(raw["id"])
         raw["last_modified_time"] = parse_time(raw["last_modified_time"])
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_orderbook(self):
         raw = load_file("orderbook.json")
         parsed = OrderbookResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_payment_path(self):
         raw = load_file("payment_path.json")
         parsed = PaymentPathResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_root(self):
         raw = load_file("root.json")
         parsed = RootResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_trade(self):
         raw = load_file("trade.json")
         parsed = TradeResponse.parse_obj(raw)
         raw["ledger_close_time"] = parse_time(raw["ledger_close_time"])
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_trades_aggregation(self):
         raw = load_file("trades_aggregation.json")
         parsed = TradesAggregationResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_transaction(self):
         raw = load_file("transaction.json")
@@ -89,9 +89,9 @@ class TestResponseModel:
         raw["valid_before"] = parse_time(raw["valid_before"])
         raw["valid_after"] = parse_time(raw["valid_after"])
         raw["source_account_sequence"] = int(raw["source_account_sequence"])
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
 
     def test_submit_transaction_success(self):
         raw = load_file("transaction_success.json")
         parsed = TransactionSuccessResponse.parse_obj(raw)
-        assert raw == parsed.dict(skip_defaults=True, by_alias=True)
+        assert raw == parsed.dict(exclude_unset=True, by_alias=True)
