@@ -27,7 +27,7 @@ class TransactionResponse(BaseModel):
     ledger: int
     created_at: datetime
     source_account: str
-    source_account_sequence: int  # str in golang impl
+    source_account_sequence: int  # str in Go impl
     fee_charged: int
     max_fee: int
     operation_count: int

@@ -25,10 +25,9 @@ class Links(BaseModel):
 class RootResponse(BaseModel):
     horizon_version: str
     core_version: str
-    exp_history_latest_ledger: Optional[int]
+    ingest_latest_ledger: int
     history_latest_ledger: int
     history_elder_ledger: int
-    ingest_latest_ledger: int
     core_latest_ledger: int
     network_passphrase: str
     current_protocol_version: int

@@ -24,5 +24,5 @@ class TradesAggregationResponse(BaseModel):
     open_r: Price
     close: str
     close_r: Price
-    timestamp: int
-    trade_count: int
+    timestamp: int  # str in Horizon
+    trade_count: int  # str in Horizon

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 
 from .common import Link
-from ..response.account_response import AccountFlags
+from ..response.common import Flags
 
 
 class Links(BaseModel):
@@ -15,5 +15,5 @@ class AssetResponse(BaseModel):
     paging_token: str
     amount: str
     num_accounts: int
-    flags: AccountFlags
+    flags: Flags
     links: Links = Field(None, alias="_links")

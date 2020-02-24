@@ -2,7 +2,7 @@ from typing import Optional, List, Dict
 
 from pydantic import BaseModel, Field
 
-from .common import Link
+from .common import Link, Flags
 
 
 class Links(BaseModel):
@@ -16,16 +16,10 @@ class Links(BaseModel):
     data: Link
 
 
-class AccountThresholds(BaseModel):
+class Thresholds(BaseModel):
     low_threshold: int
     med_threshold: int
     high_threshold: int
-
-
-class AccountFlags(BaseModel):
-    auth_required: bool
-    auth_revocable: bool
-    auth_immutable: bool
 
 
 class Balance(BaseModel):
@@ -54,8 +48,8 @@ class AccountResponse(BaseModel):
     inflation_destination: Optional[str]
     home_domain: Optional[str]
     last_modified_ledger: int
-    thresholds: AccountThresholds
-    flags: AccountFlags
+    thresholds: Thresholds
+    flags: Flags
     balances: List[Balance]
     signers: List[Signer]
     data: Dict[str, str]

@@ -65,7 +65,7 @@ class BumpSequenceResponse(BaseOperationResponse):
     """The resource representing a single operation whose type is BumpSequence.
     """
 
-    bump_to: int  # str in go source
+    bump_to: int  # str in Go impl
 
 
 class CreateAccountResponse(BaseOperationResponse):
@@ -88,7 +88,7 @@ class PaymentResponse(BaseOperationResponse):
         None,
         alias="from",
         description="This variable should be called `from`, "
-        "but `from` is a keyword in Python, so we named it` from_`.",
+        "but `from` is a keyword in Python, so we named it `from_`.",
     )
     to: str
     amount: str
@@ -169,14 +169,14 @@ class ManageSellOfferResponse(BaseOfferOperationResponse):
     """The resource representing a single operation whose type is CreatePassiveSellOffer.
     """
 
-    offer_id: int
+    offer_id: int  # str in Go Impl
 
 
 class ManageBuyOfferResponse(BaseOfferOperationResponse):
     """The resource representing a single operation whose type is ManageBuyOffer.
     """
 
-    offer_id: int
+    offer_id: int  # str in Go Impl
 
 
 class SetOptionsResponse(BaseOperationResponse):

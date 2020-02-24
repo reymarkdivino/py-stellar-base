@@ -23,7 +23,7 @@ class Price(BaseModel):
 
 
 class OfferResponse(BaseModel):
-    id: int
+    id: int  # str in Go Impl
     paging_token: str
     seller: str
     selling: Asset

@@ -85,6 +85,8 @@ class SignerUpdatedResponse(BaseEffectResponse):
     key: str
 
 
+# TODO: In my opinion asset_code should not be optional in trustline,
+# but it is optional in the source code of Horizon.
 class TrustlineCreatedResponse(BaseEffectResponse):
     asset_type: str
     asset_code: str
@@ -109,13 +111,13 @@ class TrustlineUpdatedResponse(BaseEffectResponse):
 class TrustlineAuthorizedResponse(BaseEffectResponse):
     trustor: str
     asset_type: str
-    asset_code: str  # TODO: Optional?
+    asset_code: str
 
 
 class TrustlineDeauthorizedResponse(BaseEffectResponse):
     trustor: str
     asset_type: str
-    asset_code: str  # TODO: Optional?
+    asset_code: str
 
 
 class TradeResponse(BaseEffectResponse):
@@ -128,7 +130,7 @@ class TradeResponse(BaseEffectResponse):
     bought_asset_type: str
     bought_asset_code: Optional[str]
     bought_asset_issuer: Optional[str]
-    offer_id: int  # TODO str?
+    offer_id: int  # str in Go impl
 
 
 class OfferCreatedResponse(BaseEffectResponse):

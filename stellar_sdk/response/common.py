@@ -12,6 +12,12 @@ class Asset(BaseModel):
     asset_issuer: Optional[str]
 
 
+class Flags(BaseModel):
+    auth_required: bool
+    auth_revocable: bool
+    auth_immutable: bool
+
+
 class Link(BaseModel):
     href: str
     templated: Optional[bool]
